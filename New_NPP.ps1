@@ -5,7 +5,7 @@ $installerFullPath = Join-Path $targetPath $installerName
 
 # Direct download URL to your Notepad++ installer
 # Must be public OR not requiring authentication
-$downloadUrl = "https://raw.githubusercontent.com/0110tanush/Test/main/npp_latest_x64.exe"
+$downloadUrl = "https://github.com/0110tanush/Test/blob/49414a791dc259aa9a86928085227058d5ee71c7/npp_latest_x64.exe"
 
 # ================== ENSURE FOLDER EXISTS ==================
 if (-not (Test-Path -Path $targetPath)) {
@@ -49,3 +49,4 @@ try {
     Write-Error "Error occurred during installation: $_"
 
 }
+
