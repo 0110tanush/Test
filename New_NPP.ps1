@@ -3,10 +3,10 @@ $targetPath = "C:\temp\"
 $installerName = "npp.8.8.2.Installer.x64.exe"
 $installerFullPath = Join-Path $targetPath $installerName
 
-# Expected Notepad++ install path for 64-bit version
+# Expected Notepad++ install path (64-bit default)
 $notepadPPPath = "C:\Program Files\Notepad++\notepad++.exe"
 
-# Direct download URL to your Notepad++ installer (RAW GitHub link)
+# Direct RAW GitHub download URL to installer
 $downloadUrl = "https://raw.githubusercontent.com/0110tanush/Test/d79690659dd76dece83b7a877a06d0cce91ef6a6/npp_latest_x64.exe"
 
 # ================== ENSURE FOLDER EXISTS ==================
@@ -25,14 +25,14 @@ try {
 
     Write-Host "Installing Notepad++ silently..."
     $installProcess = Start-Process -FilePath $installerFullPath -ArgumentList "/S" -Wait -PassThru
-
+    
     if ($installProcess.ExitCode -eq 0) {
         Write-Host "Notepad++ installation completed successfully."
     } else {
         Write-Warning "Installer exited with code $($installProcess.ExitCode) — Installation may have failed."
     }
 
-    # Delete installer after installation
+    # Remove installer after install
     if (Test-Path $installerFullPath) {
         Remove-Item -Path $installerFullPath -Force
         Write-Host "Installer file removed."
@@ -56,11 +56,17 @@ try {
     $commandPath = "$contextMenuPath\command"
 
     if (-not (Test-Path $contextMenuPath)) {
+        # Create keys
         New-Item -Path $contextMenuPath -Force | Out-Null
         New-Item -Path $commandPath -Force | Out-Null
+        
+        # Set display name in context menu
         Set-ItemProperty -Path $contextMenuPath -Name "(Default)" -Value "Open with Notepad++"
+        
+        # Command to launch NPP with selected file
         Set-ItemProperty -Path $commandPath -Name "(Default)" -Value "`"$notepadPPPath`" `"%1`""
-        Write-Host "Added 'Open with Notepad++' context menu entry for all files."
+        
+        Write-Host "Added 'Open with Notepad++' context menu entry."
     } else {
         Write-Host "'Open with Notepad++' context menu entry already exists."
     }
@@ -69,17 +75,4 @@ catch {
     Write-Warning "Failed to create context menu entry: $_"
 }
 
-# ================== SELF-DELETE SCRIPT FILE (IF POSSIBLE) ==================
-try {
-    $thisScript = $MyInvocation.MyCommand.Path
-    if (![string]::IsNullOrEmpty($thisScript) -and (Test-Path -Path $thisScript)) {
-        Write-Host "Deleting the script file: $thisScript"
-        Start-Sleep -Seconds 1
-        Remove-Item -Path $thisScript -Force
-    } else {
-        Write-Host "No script file path found. Skipping self-delete."
-    }
-}
-catch {
-    Write-Warning "Failed to delete script itself: $_"
-}
+Write-Host "Script execution completed."
